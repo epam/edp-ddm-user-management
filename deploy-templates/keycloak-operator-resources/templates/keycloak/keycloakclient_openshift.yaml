@@ -1,0 +1,15 @@
+apiVersion: v1.edp.epam.com/v1alpha1
+kind: KeycloakClient
+metadata:
+  name: openshift
+spec:
+  clientId: openshift
+  directAccess: true
+  audRequired: false
+  clientRoles: null
+  realmRoles: null
+  protocolMappers: null
+  targetRealm: openshift
+  public: false
+  ServiceAccountEnabled: true
+  webUrl: "{{ .Values.keycloak.url }}"

@@ -1,0 +1,15 @@
+{{- if eq .Values.global.platform "openshift" -}}
+apiVersion: authorization.openshift.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: keycloak-operator-{{ .Release.Namespace }}
+roleRef:
+  name: keycloak-operator-{{ .Release.Namespace }}-clusterrole
+subjects:
+  - kind: ServiceAccount
+    name: keycloak-operator
+    namespace: {{ .Release.Namespace }}
+userNames:
+  - system:serviceaccount:{{ .Release.Namespace }}:keycloak-operator
+groupNames: []
+{{- end -}}

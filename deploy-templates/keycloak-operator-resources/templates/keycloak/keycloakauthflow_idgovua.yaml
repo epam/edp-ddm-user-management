@@ -1,0 +1,33 @@
+{{- range $authFlow := .Values.idgovua.authFlows }}
+---
+apiVersion: v1.edp.epam.com/v1alpha1
+kind: KeycloakAuthFlow
+metadata:
+  name: {{ $authFlow.name }}
+  annotations:
+    helm.sh/resource-policy: keep
+spec:
+  alias: {{ $authFlow.alias }}
+  authenticationExecutions:
+  {{- range $authenticator := $authFlow.authenticators }}
+    - alias: {{ $authenticator.alias }}
+      authenticator: {{ $authenticator.name }}
+      authenticatorFlow: {{ $authenticator.authenticatorFlow }}
+      requirement: {{ $authenticator.requirement }}
+      priority: {{ $authenticator.priority }}
+  {{- if $authenticator.authenticatorConfig }}
+      authenticatorConfig: 
+        alias: {{ $authenticator.name }}-configuration
+        config: 
+          {{- range $key,$value := $authenticator.authenticatorConfig }}
+            {{ $key }}: {{ tpl $value $ | squote }}
+          {{- end }}   
+      {{- end }}
+  {{- end }}
+  builtIn: {{ $authFlow.builtIn }}
+  providerId: {{ $authFlow.providerId }}
+  realm: {{ $authFlow.realm }}
+  topLevel: {{ $authFlow.topLevel }}
+  parentName: {{ $authFlow.parentName }}
+  childType: {{ $authFlow.childType }}
+{{- end -}}

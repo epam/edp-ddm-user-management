@@ -1,0 +1,15 @@
+apiVersion: v1.edp.epam.com/v1alpha1
+kind: KeycloakClient
+metadata:
+  name: web-console-keycloak-client
+spec:
+  clientId: web-console-keycloak-client
+  directAccess: true
+  audRequired: false
+  clientRoles: null
+  realmRoles: null
+  protocolMappers: null
+  targetRealm: openshift
+  public: false
+  ServiceAccountEnabled: true
+  webUrl: "https://oauth-openshift.{{ .Values.dnsWildcard }}/oauth2callback/keycloak"

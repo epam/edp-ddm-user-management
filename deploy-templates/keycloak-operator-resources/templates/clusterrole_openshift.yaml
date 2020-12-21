@@ -1,0 +1,75 @@
+{{- if eq .Values.global.platform "openshift" -}}
+apiVersion: authorization.openshift.io/v1
+kind: ClusterRole
+metadata:
+  annotations:
+    openshift.io/description: Role for keycloak-operator service account
+    openshift.io/reconcile-protect: "false"
+  name: keycloak-operator-{{ .Release.Namespace }}-clusterrole
+rules:
+- apiGroups:
+    - '*'
+  attributeRestrictions: null
+  resources:
+    - securitycontextconstraints
+  verbs:
+    - patch
+    - update
+    - delete
+    - get
+    - list
+    - create
+- apiGroups:
+    - '*'
+  attributeRestrictions: null
+  resources:
+    - configmaps
+    - keycloakauthflows
+    - keycloakauthflows/finalizers
+    - keycloakauthflows/status
+    - keycloaks
+    - keycloaks/finalizers
+    - keycloaks/status
+    - keycloakclients
+    - keycloakclients/finalizers
+    - keycloakclients/status
+    - keycloakclientscopes
+    - keycloakclientscopes/finalizers
+    - keycloakclientscopes/status
+    - keycloakrealmrolebatches
+    - keycloakrealmrolebatches/finalizers
+    - keycloakrealmrolebatches/status
+    - keycloakrealms
+    - keycloakrealms/finalizers
+    - keycloakrealms/status
+    - keycloakrealmgroups
+    - keycloakrealmgroups/finalizers
+    - keycloakrealmgroups/status
+    - keycloakrealmroles
+    - keycloakrealmroles/finalizers
+    - keycloakrealmroles/status
+    - keycloakrealmusers
+    - keycloakrealmusers/finalizers
+    - keycloakrealmusers/status
+    - edpcomponents
+    - edpcomponents/finalizers
+    - edpcomponents/status
+    - keycloakrealmidentityproviders
+    - keycloakrealmidentityproviders/finalizers
+    - keycloakrealmidentityproviders/status
+    - keycloakrealmcomponents
+    - keycloakrealmcomponents/finalizers
+    - keycloakrealmcomponents/status
+    - events
+  verbs:
+     - '*'
+- apiGroups:
+    - coordination.k8s.io
+  verbs:
+    - create
+    - get
+    - list
+    - update
+  resources:
+    - leases
+{{ end }}

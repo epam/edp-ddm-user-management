@@ -1,0 +1,4 @@
+apiVersion: v1
+description: Helmfile chart for groupsync-operator
+name: groupsync-operator
+version: 1.0.0

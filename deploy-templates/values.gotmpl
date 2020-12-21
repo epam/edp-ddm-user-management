@@ -1,0 +1,242 @@
+{{ $cloudProvider := "" | regexReplaceAll "'" ("" | regexReplaceAll  "MachineProviderConfig" (exec "oc" (list "get" "machine" "-n" "openshift-machine-api" "-l" "machine.openshift.io/cluster-api-machine-role=master" "--no-headers" "-o" "jsonpath='{.items[0].spec.providerSpec.value.kind}'"))) }}
+
+dnsWildcard: {{ env "dnsWildcard" }}
+
+{{ if ne $cloudProvider "AWS" }}
+postgresql:
+  primary:
+   podAnnotations: {"backup.velero.io/backup-volumes": "data"}
+{{ end }}
+
+
+{{ if ne $cloudProvider "AWS" }}
+postgresql:
+  primary:
+   podAnnotations: {"backup.velero.io/backup-volumes": "data"}
+{{ end }}
+
+idgovua:
+  sandbox: {{ env "idgovuaSandbox" | default "on" }}
+  clientId: {{ env "idgovuaClientId" | default "mock" }}
+  clientSecret: {{ env "idgovuaClientSecret" | default "mock" }}
+  authFlows:
+    browserWithRedirectorFlow:
+      name: browser-with-redirector
+      realm: id-gov-ua
+      alias: browser-with-redirector
+      builtIn: false
+      providerId: basic-flow
+      topLevel: true
+      parentName: ''
+      childType: ''
+      authenticators:
+        cookie:
+          alias: ''
+          name: "auth-cookie"
+          priority: 0
+          requirement: "ALTERNATIVE"
+          authenticatorFlow: false
+        redirector:
+          alias: ''
+          name: "identity-provider-redirector"
+          priority: 1
+          requirement: "REQUIRED"
+          authenticatorFlow: false
+          authenticatorConfig:
+            defaultProvider: "idgovua"
+    firstBrokerLoginCustomRootFlow:
+      name: first-broker-login-custom-root
+      realm: id-gov-ua
+      alias: custom-first-broker-login-feature
+      builtIn: false
+      providerId: basic-flow
+      topLevel: true
+      parentName: ''
+      childType: ''
+      authenticators:
+        idpReviewProfile:
+          alias: ''
+          name: "idp-review-profile"
+          priority: 0
+          requirement: "REQUIRED"
+          authenticatorFlow: false
+          authenticatorConfig:
+            update.profile.on.first.login: 'off'
+        customFirstBrokerLoginUserCreationOrLinking:
+          alias: 'Custom First Broker Login User Creation Or Linking'
+          name: ''
+          priority: 1
+          requirement: "REQUIRED"
+          authenticatorFlow: true
+    firstBrokerLoginCustomBranch1Flow:
+      name: first-broker-login-custom-branch-1
+      realm: id-gov-ua
+      alias: 'Custom First Broker Login User Creation Or Linking'
+      builtIn: false
+      providerId: registration-page-form
+      topLevel: false
+      parentName: 'custom-first-broker-login-feature'
+      childType: 'basic-flow'
+      authenticators:
+        idpCreateUserIfUnique:
+          alias: ''
+          name: "idp-create-user-if-unique"
+          priority: 0
+          requirement: "ALTERNATIVE"
+          authenticatorFlow: false
+          authenticatorConfig:
+            require.password.update.after.registration: 'off'
+        customFirstBrokerLoginHandleExistingAccount:
+          alias: 'Custom First Broker Login Handle Existing Account'
+          name: ''
+          priority: 1
+          requirement: "ALTERNATIVE"
+          authenticatorFlow: true
+    firstBrokerLoginCustomBranch2Flow:
+      name: first-broker-login-custom-branch-2
+      realm: id-gov-ua
+      alias: 'Custom First Broker Login Handle Existing Account'
+      builtIn: false
+      providerId: registration-page-form
+      topLevel: false
+      parentName: 'Custom First Broker Login User Creation Or Linking'
+      childType: 'basic-flow'
+      authenticators:
+        idpConfirmLink:
+          alias: ''
+          name: "idp-confirm-link"
+          priority: 0
+          requirement: "REQUIRED"
+          authenticatorFlow: false
+        customFirstBrokerLoginAccountVerificationOptions:
+          alias: 'Custom First Broker Login Account Verification Options'
+          name: ''
+          priority: 1
+          requirement: "REQUIRED"
+          authenticatorFlow: true
+    firstBrokerLoginCustomBranch3Flow:
+      name: first-broker-login-custom-branch-3
+      realm: id-gov-ua
+      alias: 'Custom First Broker Login Account Verification Options'
+      builtIn: false
+      providerId: registration-page-form
+      topLevel: false
+      parentName: 'Custom First Broker Login Handle Existing Account'
+      childType: 'basic-flow'
+      authenticators:
+        idpEmailVerification:
+          alias: ''
+          name: "idp-email-verification"
+          priority: 0
+          requirement: "ALTERNATIVE"
+          authenticatorFlow: false
+        customFirstBrokerLoginVerifyExistingAccountByReAuthentication:
+          alias: 'Custom First Broker Login Verify Existing Account By Re-authentication'
+          name: ''
+          priority: 1
+          requirement: "ALTERNATIVE"
+          authenticatorFlow: true
+    firstBrokerLoginCustomBranch4Flow:
+      name: first-broker-login-custom-branch-4
+      realm: id-gov-ua
+      alias: 'Custom First Broker Login Verify Existing Account By Re-authentication'
+      builtIn: false
+      providerId: registration-page-form
+      topLevel: false
+      parentName: 'Custom First Broker Login Account Verification Options'
+      childType: 'basic-flow'
+      authenticators:
+        idpUsernamePasswordForm:
+          name: "idp-username-password-form"
+          priority: 0
+          requirement: "REQUIRED"
+          authenticatorFlow: false
+        customFirstBrokerLoginFirstBrokerLoginConditionalOTP:
+          alias: 'Custom First Broker Login First Broker Login - Conditional OTP'
+          name: ''
+          priority: 1
+          requirement: "CONDITIONAL"
+          authenticatorFlow: true
+    firstBrokerLoginCustomBranch5Flow:
+      name: first-broker-login-custom-branch-5
+      realm: id-gov-ua
+      alias: 'Custom First Broker Login First Broker Login - Conditional OTP'
+      builtIn: false
+      providerId: registration-page-form
+      topLevel: false
+      parentName: 'Custom First Broker Login Verify Existing Account By Re-authentication'
+      childType: 'basic-flow'
+      authenticators:
+        conditionalUserConfigured:
+          name: "conditional-user-configured"
+          priority: 0
+          requirement: "REQUIRED"
+          authenticatorFlow: false
+        authOtpForm:
+          name: "auth-otp-form"
+          priority: 1
+          requirement: "REQUIRED"
+          authenticatorFlow: false
+    citizenIdGovUaAuthFlow:
+      name: id-gov-ua
+      realm: id-gov-ua
+      alias: id-gov-ua
+      builtIn: false
+      providerId: basic-flow
+      topLevel: true
+      parentName: ''
+      childType: ''
+      authenticators:
+        reviewConfigAuthenticator:
+          alias: ''
+          name: idp-review-profile
+          requirement: REQUIRED
+          priority: 1
+          authenticatorFlow: false
+          authenticatorConfig:
+            update.profile.on.first.login: "off"
+        citizenRolesAuthenticator:
+          alias: ''
+          name: id-gov-ua-authenticator
+          requirement: REQUIRED
+          priority: 2
+          authenticatorFlow: false
+          authenticatorConfig:
+            citizenDefaultRoles: "offline_access;"
+
+keycloak:
+  ssoRealm:
+    autoRedirectEnabled: {{ env "autoRedirectEnabled" | default "false" }}
+    ssoRealmEnabled: {{ env "ssoRealmEnabled" | default "false" }}
+  host: platform-keycloak.{{ requiredEnv "dnsWildcard" }}
+  url: https://platform-keycloak.{{ env "dnsWildcard" }}
+  route:
+    host: platform-keycloak.{{ env "dnsWildcard" }}
+
+dockerProxyRegistry:
+dockerRegistry: {{ env "dockerRegistry" }}
+
+groupsync_operator_version: 0.0.12
+
+global:
+  whiteListIP:
+    adminRoutes: {{ env "ADMIN_ROUTES_WHITELIST_CIDR" }}
+  imageRegistry: '{{ env "dockerProxyRegistry" }}'
+  platform: openshift
+  storageClass: {{ env "platformStorageClass" | default "gp2" }}
+  jenkins:
+    administrators: []
+
+update_IDP: {{ env "update_IDP" | default "true" | quote }}
+
+
+# TODO: remove in digital-signature-ops original repo
+namespace: {{ env "NAMESPACE" }}
+
+{{ $centralVaultUrl := exec "oc" (list "get" "Secret" "-n" "control-plane" "vault-root-access-token" "--no-headers" "-o" "jsonpath={.data.vaultUrl}") }}
+vault:
+  platformVaultToken: {{ env "platformVaultToken" }}
+  openshiftApiUrl: {{ env "openshiftApiUrl" }}
+  centralVaultUrl: {{ b64dec $centralVaultUrl }}
+
+globalEDPProject:  {{ requiredEnv "globalEDPProject" }}

@@ -1,0 +1,11 @@
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  generateName: group-sync-operator-
+  annotations:
+    olm.providedAPIs: GroupSync.v1alpha1.redhatcop.redhat.io
+  namespace: group-sync-operator
+  name: group-sync-operator
+spec:
+  targetNamespaces:
+    - group-sync-operator
