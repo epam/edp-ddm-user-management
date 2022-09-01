@@ -1,0 +1,11 @@
+apiVersion: v1.edp.epam.com/v1alpha1
+kind: KeycloakRealm
+metadata:
+  name: id-gov-ua
+  annotations:
+    helm.sh/resource-policy: keep
+spec:
+  keycloakOwner: main
+  realmName: id-gov-ua
+  ssoRealmEnabled: false
+  browserFlow: browser-with-redirector

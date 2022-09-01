@@ -1,0 +1,172 @@
+helmDefaults:
+  wait: true
+  timeout: 600
+missingFileHandler: Warn
+repositories:
+- name: hashicorp
+  url: https://helm.releases.hashicorp.com
+- name: bitnami
+  url: https://raw.githubusercontent.com/bitnami/charts/defb094c658024e4aa8245622dab202874880cbc/bitnami
+- name: prometheus_community
+  url: https://prometheus-community.github.io/helm-charts
+values:
+- values.yaml
+- values.gotmpl
+releases:
+- name: groupsync-operator
+  namespace: group-sync-operator
+  chart: groupsync-operator
+  values:
+  - values.gotmpl
+  - values.yaml
+  labels: {}
+- name: keycloak-groupsync
+  namespace: group-sync-operator
+  chart: keycloak-groupsync
+  values:
+  - values.gotmpl
+  - values.yaml
+  hooks:
+  - events:
+    - postsync
+    command: bash
+    args:
+    - ../scripts/copy_keycloak_secret.sh
+    - user-management
+    - '{{`{{ .Release.Namespace }}`}}'
+  needs:
+  - group-sync-operator/groupsync-operator
+  - user-management/keycloak
+  labels: {}
+- name: keycloak-operator-resources
+  namespace: user-management
+  chart: keycloak-operator-resources
+  needs:
+  - user-management/keycloak
+  values:
+  - values.yaml
+  - values.gotmpl
+  labels: {}
+- name: keycloak-idps
+  namespace: user-management
+  chart: keycloak-idps
+  needs:
+  - user-management/keycloak
+  - user-management/keycloak-operator-resources
+  values:
+  - values.yaml
+  - values.gotmpl
+  labels: {}
+  hooks:
+  - events:
+    - presync
+    showlogs: true
+    command: bash
+    args:
+    - ../scripts/check_resource.sh
+    - Secret
+    - keycloak-client-openshift-secret
+    - '{{`{{ .Release.Namespace }}`}}'
+- name: keycloak
+  namespace: user-management
+  chart: '{{ env "CUSTOM_BASEDIR" | default "/opt" }}/repositories/components/infra/keycloak.git/deploy-templates'
+  labels:
+    type: remote
+    update_scc: false
+    isbranch: false
+    stream: master
+    path: components/infra/
+    repoURL: ssh://jenkins@gerrit.mdtu-ddm-edp-cicd:32114/mdtu-ddm/devops/keycloak.git
+  values:
+  - values.yaml
+  - values.gotmpl
+  - image:
+      name: '{{ env "edpComponentDockerRegistryUrl" }}/{{ env "globalEDPProject" }}/keycloak-master'
+      version: 1.5.0-SNAPSHOT.95
+  version: 1.5.0-SNAPSHOT.95
+  hooks:
+  - events:
+    - presync
+    showlogs: true
+    command: oc
+    args:
+    - adm
+    - policy
+    - add-scc-to-user
+    - anyuid
+    - -z
+    - keycloak
+    - -n
+    - '{{`{{ .Release.Namespace }}`}}'
+  - events:
+    - postuninstall
+    showlogs: true
+    command: oc
+    args:
+    - adm
+    - policy
+    - remove-scc-from-user
+    - anyuid
+    - -z
+    - keycloak
+    - -n
+    - '{{`{{ .Release.Namespace }}`}}'
+- name: keycloak-operator
+  namespace: user-management
+  chart: '{{ env "CUSTOM_BASEDIR" | default "/opt" }}/repositories/components/registry/keycloak-operator.git/deploy-templates'
+  labels:
+    repoURL: ssh://jenkins@gerrit.mdtu-ddm-edp-cicd:32114/mdtu-ddm/devops/operators/keycloak-operator.git
+    update_scc: true
+    type: remote
+    path: components/registry/
+  values:
+  - values.yaml
+  - values.gotmpl
+  - operator:
+      clusterRoleName: keycloak-operator-user-management-clusterrole
+  version: 1.5.0-SNAPSHOT.68
+  needs:
+  - user-management/keycloak
+  - user-management/keycloak-operator-resources
+  hooks:
+  - events:
+    - postsync
+    showlogs: true
+    command: bash
+    args:
+    - -c
+    - '{{`{{ if eq .Values.update_IDP "false"}}echo "IDP configuration skipped"{{
+      else }}bash ../scripts/configure_openshift_IdP.sh {{ .Values.keycloak.url }}{{
+      end }}`}}'
+- name: digital-signature-ops
+  namespace: user-management
+  chart: '{{ env "CUSTOM_BASEDIR" | default "/opt" }}/repositories/components/registry/digital-signature-ops.git/deploy-templates'
+  values:
+  - values.yaml
+  - values.gotmpl
+  - image:
+      name: '{{ env "edpComponentDockerRegistryUrl" }}/{{ env "globalEDPProject" }}/digital-signature-ops-master'
+      version: 1.5.0-SNAPSHOT.40
+  version: 1.5.0-SNAPSHOT.40
+  missingFileHandler: Warn
+  labels:
+    type: remote
+    update_scc: false
+    isbranch: false
+    stream: master
+    path: components/registry/
+    repoURL: ssh://jenkins@gerrit.mdtu-ddm-edp-cicd:32114/mdtu-ddm/low-code-platform/platform/backend/applications/digital-signature-ops.git
+- name: hashicorp-vault
+  namespace: user-management
+  chart: '{{ env "CUSTOM_BASEDIR" | default "/opt" }}/repositories/components/registry/hashicorp-vault.git/deploy-templates'
+  values:
+  - values.yaml
+  - values.gotmpl
+  missingFileHandler: Warn
+  version: 1.5.0-SNAPSHOT.65
+  labels:
+    type: remote
+    update_scc: false
+    isbranch: false
+    path: components/registry/
+    repoURL: ssh://jenkins@gerrit.mdtu-ddm-edp-cicd:32114/mdtu-ddm/devops/hashicorp-vault.git

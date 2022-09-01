@@ -1,0 +1,17 @@
+apiVersion: v1.edp.epam.com/v1alpha1
+kind: KeycloakRealm
+metadata:
+  name: master
+  annotations:
+    helm.sh/resource-policy: keep
+spec:
+  keycloakOwner: main
+  realmName: master
+  realmEventConfig:
+    adminEventsDetailsEnabled: true
+    adminEventsEnabled: true
+    eventsEnabled: true
+    eventsExpiration: 15000
+    eventsListeners:
+      - jboss-logging
+      - metrics-listener

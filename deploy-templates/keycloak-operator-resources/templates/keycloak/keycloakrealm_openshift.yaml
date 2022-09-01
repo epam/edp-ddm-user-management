@@ -1,0 +1,14 @@
+apiVersion: v1.edp.epam.com/v1alpha1
+kind: KeycloakRealm
+metadata:
+  name: openshift
+  labels:
+    targetRealm: openshift
+spec:
+  keycloakOwner: main
+  realmName: openshift
+  ssoRealmEnabled: {{ .Values.keycloak.ssoRealm.ssoRealmEnabled }}
+  {{- if .Values.keycloak.ssoRealm.ssoRealmEnabled }}
+  ssoAutoRedirectEnabled: {{ .Values.keycloak.ssoRealm.autoRedirectEnabled }}
+  ssoRealmName: openshift
+  {{- end }}

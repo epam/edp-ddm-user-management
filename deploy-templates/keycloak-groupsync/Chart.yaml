@@ -1,0 +1,4 @@
+apiVersion: v1
+description: Helmfile chart for keycloak-groupsync
+name: keycloak-groupsync
+version: 1.0.0

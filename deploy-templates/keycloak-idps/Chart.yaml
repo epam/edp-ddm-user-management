@@ -1,0 +1,7 @@
+apiVersion: v1
+description: Helmfile chart for Golang application/service deploying
+home: https://www.epam.com
+keywords:
+- Golang
+name: keycloak-idps
+version: v1.6.0

@@ -1,0 +1,17 @@
+apiVersion: redhatcop.redhat.io/v1alpha1
+kind: GroupSync
+metadata:
+  name: platform-keycloak
+  namespace: group-sync-operator
+spec:
+  providers:
+    - keycloak:
+        credentialsSecret:
+          name: keycloak
+          namespace: group-sync-operator
+        loginRealm: master
+        realm: openshift
+        scope: sub
+        url: '{{ .Values.keycloak.url }}'
+      name: keycloak
+  schedule: '*/5 * * * *'
