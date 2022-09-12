@@ -11,5 +11,4 @@ spec:
   protocolMappers: null
   targetRealm: openshift
   public: false
-  ServiceAccountEnabled: true
   webUrl: "https://oauth-openshift.{{ .Values.dnsWildcard }}/oauth2callback/keycloak"

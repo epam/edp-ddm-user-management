@@ -11,5 +11,4 @@ spec:
   protocolMappers: null
   targetRealm: openshift
   public: false
-  ServiceAccountEnabled: true
   webUrl: "{{ .Values.keycloak.url }}"
