@@ -6,7 +6,7 @@ repositories:
 - name: hashicorp
   url: https://helm.releases.hashicorp.com
 - name: bitnami
-  url: https://raw.githubusercontent.com/bitnami/charts/defb094c658024e4aa8245622dab202874880cbc/bitnami
+  url: https://charts.bitnami.com/bitnami
 - name: prometheus_community
   url: https://prometheus-community.github.io/helm-charts
 values:
