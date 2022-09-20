@@ -146,8 +146,8 @@ releases:
   - values.gotmpl
   - image:
       name: '{{ env "edpComponentDockerRegistryUrl" }}/{{ env "globalEDPProject" }}/digital-signature-ops-master'
-      version: 1.8.0.7
-  version: 1.8.0.7
+      version: 1.8.0.9
+  version: 1.8.0.9
   missingFileHandler: Warn
   labels:
     type: remote
