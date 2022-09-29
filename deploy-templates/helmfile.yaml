@@ -159,7 +159,7 @@ releases:
   - values.yaml
   - values.gotmpl
   missingFileHandler: Warn
-  version: 1.5.0-SNAPSHOT.65
+  version: 1.5.0-SNAPSHOT.67
   labels:
     type: remote
     update_scc: false
