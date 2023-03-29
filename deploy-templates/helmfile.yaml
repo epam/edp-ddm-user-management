@@ -15,6 +15,16 @@ releases:
   values:
   - values.gotmpl
   - values.yaml
+  hooks:
+  - events:
+    - postsync
+    showlogs: true
+    command: bash
+    args:
+    - ../scripts/approveInstallPlan.sh
+    - '{{`{{ .Values.globalEDPProject }}`}}'
+    - '{{`{{ .Values.groupsync_operator_version }}`}}'
+    - '{{`{{ .Release.Namespace }}`}}'
   labels: {}
 - name: keycloak-groupsync
   namespace: group-sync-operator
