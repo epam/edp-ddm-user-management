@@ -226,6 +226,7 @@ groupsync_operator_version: 0.0.23
 
 global:
   deploymentMode: {{ env "deploymentMode" }}
+  clusterVersion: {{ $cluster_version }}
   whiteListIP:
     adminRoutes: {{ env "ADMIN_ROUTES_WHITELIST_CIDR" }}
   imageRegistry: '{{ env "dockerProxyRegistry" }}'
