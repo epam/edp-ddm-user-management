@@ -8,13 +8,17 @@ spec:
   authenticateByDefault: true
   enabled: true
   firstBrokerLoginFlowAlias: "custom-first-broker-login-feature"
-  providerId: "idgovua"
+  providerId: "idgovuav2"
   config:
     clientId: {{ .Values.idgovua.clientId }}
     clientSecret: {{ .Values.idgovua.clientSecret }}
     hideOnLoginPage: "true"
     dsoCertificateUrl: http://digital-signature-ops:8080/api/key/certificate
     dsoDecryptInfoUrl: http://digital-signature-ops:8080/api/key/decrypt
-    sandbox: {{ .Values.idgovua.sandbox | squote }}
+    {{- if (default .Values.idgovua.sandbox true) }}
+    url: https://test.id.gov.ua?auth_type=dig_sign%2Cbank_id
+    {{ else }}
+    url: https://id.gov.ua?auth_type=dig_sign%2Cbank_id%2Cdiia_id
+    {{ end -}}
     syncMode: "IMPORT"
     useJwksUrl: "true"
