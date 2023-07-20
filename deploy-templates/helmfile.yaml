@@ -88,8 +88,8 @@ releases:
   - values.gotmpl
   - image:
       name: '{{ env "edpComponentDockerRegistryUrl" }}/{{ env "globalEDPProject" }}/keycloak-master'
-      version: 1.9.6.4
-  version: 1.9.6.4
+      version: 1.9.6.5
+  version: 1.9.6.5
   hooks:
   - events:
     - presync
