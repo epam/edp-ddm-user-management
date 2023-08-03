@@ -1,0 +1,31 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: {{ .Values.nginx.name }}
+  labels:
+    app: {{ .Values.nginx.name }}-proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.nginx.name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.nginx.name }}
+    spec:
+      volumes:
+        - name: {{ .Values.nginx.name }}-config
+          configMap:
+            name: {{ .Values.nginx.name }}-config
+      containers:
+        - name: nginx
+          image: nginxinc/nginx-unprivileged
+          ports:
+            - containerPort: {{ .Values.nginx.port }}
+              protocol: TCP
+          volumeMounts:
+            - name: {{ .Values.nginx.name }}-config
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+          imagePullPolicy: IfNotPresent

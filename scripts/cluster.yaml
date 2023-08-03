@@ -18,7 +18,7 @@ spec:
         clientSecret:
           name: keycloak-client-web-console-keycloak-client-secret
         issuer: >-
-          [KEYCLOAK_URL]/auth/realms/openshift
+          [KEYCLOAK_URL]/realms/openshift
       mappingMethod: add
       name: keycloak
       type: OpenID

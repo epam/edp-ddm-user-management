@@ -1,0 +1,20 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: {{ .Values.nginx.name }}-config
+  labels:
+    app: {{ .Values.nginx.name }}-proxy
+data:
+  nginx.conf: |
+    events { }
+    pid nginx.pid;
+    http {
+      server_tokens off;
+      server {
+        listen {{ .Values.nginx.port }};
+        include /etc/nginx/mime.types;
+        location / {
+          proxy_pass {{ .Values.nginx.keycloak.url }};
+        }
+      }
+    }

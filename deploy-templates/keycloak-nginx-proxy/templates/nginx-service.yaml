@@ -1,0 +1,15 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ .Values.nginx.name }}
+  labels:
+    app: {{ .Values.nginx.name }}-proxy
+spec:
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: {{ .Values.nginx.port }}
+  internalTrafficPolicy: Cluster
+  type: ClusterIP
+  selector:
+    app: {{ .Values.nginx.name }}

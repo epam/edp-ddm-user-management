@@ -30,6 +30,9 @@ rules:
     - keycloaks
     - keycloaks/finalizers
     - keycloaks/status
+    - clusterkeycloaks
+    - clusterkeycloaks/finalizers
+    - clusterkeycloaks/status
     - keycloakclients
     - keycloakclients/finalizers
     - keycloakclients/status
