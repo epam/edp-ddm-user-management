@@ -1,10 +1,11 @@
 helmDefaults:
-  wait: true
   timeout: 600
 missingFileHandler: Warn
 repositories:
 - name: hashicorp
   url: https://helm.releases.hashicorp.com
+- name: bitnami
+  url: https://charts.bitnami.com/bitnami
 values:
 - values.yaml
 - values.gotmpl
@@ -26,6 +27,7 @@ releases:
     - '{{`{{ .Values.groupsync_operator_version }}`}}'
     - '{{`{{ .Release.Namespace }}`}}'
   labels: {}
+
 - name: keycloak-groupsync
   namespace: group-sync-operator
   chart: keycloak-groupsync
@@ -44,6 +46,7 @@ releases:
   - group-sync-operator/groupsync-operator
   - user-management/keycloak
   labels: {}
+
 - name: keycloak-operator-resources
   namespace: user-management
   chart: keycloak-operator-resources
@@ -53,6 +56,7 @@ releases:
   - values.yaml
   - values.gotmpl
   labels: {}
+
 - name: keycloak-idps
   namespace: user-management
   chart: keycloak-idps
@@ -73,6 +77,7 @@ releases:
     - Secret
     - keycloak-client-openshift-secret
     - '{{`{{ .Release.Namespace }}`}}'
+
 - name: keycloak
   namespace: user-management
   chart: '{{ env "CUSTOM_BASEDIR" | default "/opt" }}/repositories/components/infra/keycloak.git/deploy-templates'
@@ -88,8 +93,8 @@ releases:
   - values.gotmpl
   - image:
       name: '{{ env "edpComponentDockerRegistryUrl" }}/{{ env "globalEDPProject" }}/keycloak-master'
-      version: 1.9.6.5
-  version: 1.9.6.5
+      version: 1.9.6.8
+  version: 1.9.6.8
   hooks:
   - events:
     - presync
@@ -117,6 +122,7 @@ releases:
     - keycloak
     - -n
     - '{{`{{ .Release.Namespace }}`}}'
+
 - name: keycloak-operator
   namespace: user-management
   chart: '{{ env "CUSTOM_BASEDIR" | default "/opt" }}/repositories/components/registry/keycloak-operator.git/deploy-templates'
@@ -130,7 +136,7 @@ releases:
   - values.gotmpl
   - operator:
       clusterRoleName: keycloak-operator-user-management-clusterrole
-  version: 1.5.0-SNAPSHOT.74
+  version: 1.5.0-SNAPSHOT.76
   needs:
   - user-management/keycloak
   - user-management/keycloak-operator-resources
@@ -144,6 +150,28 @@ releases:
     - '{{`{{ if eq .Values.update_IDP "false"}}echo "IDP configuration skipped"{{
       else }}bash ../scripts/configure_openshift_IdP.sh {{ .Values.keycloak.url }}{{
       end }}`}}'
+
+- name: keycloak-postgresql
+  namespace: user-management
+  chart: keycloak-postgresql
+  labels: {}
+  needs:
+  - user-management/keycloak
+  values:
+  - values.yaml
+  - values.gotmpl
+
+- name: prometheus-postgres-exporter
+  namespace: user-management
+  chart: prometheus-postgres-exporter
+  labels: {}
+  needs:
+  - user-management/keycloak
+  - user-management/keycloak-postgresql
+  values:
+  - values.yaml
+  - values.gotmpl
+
 - name: digital-signature-ops
   namespace: user-management
   chart: '{{ env "CUSTOM_BASEDIR" | default "/opt" }}/repositories/components/registry/digital-signature-ops.git/deploy-templates'
@@ -152,8 +180,8 @@ releases:
   - values.gotmpl
   - image:
       name: '{{ env "edpComponentDockerRegistryUrl" }}/{{ env "globalEDPProject" }}/digital-signature-ops-master'
-      version: 1.9.5.9
-  version: 1.9.5.9
+      version: 1.9.5.11
+  version: 1.9.5.11
   missingFileHandler: Warn
   labels:
     type: remote
@@ -162,6 +190,7 @@ releases:
     stream: master
     path: components/registry/
     repoURL: ssh://jenkins@gerrit.mdtu-ddm-edp-cicd:32114/mdtu-ddm/low-code-platform/platform/backend/applications/digital-signature-ops.git
+
 - name: hashicorp-vault
   namespace: user-management
   chart: '{{ env "CUSTOM_BASEDIR" | default "/opt" }}/repositories/components/registry/hashicorp-vault.git/deploy-templates'
@@ -176,6 +205,7 @@ releases:
     isbranch: false
     path: components/registry/
     repoURL: ssh://jenkins@gerrit.mdtu-ddm-edp-cicd:32114/mdtu-ddm/devops/hashicorp-vault.git
+
 - name: reloader
   chart: '{{ env "CUSTOM_BASEDIR" | default "/opt" }}/repositories/components/registry/reloader.git/deploy-templates'
   namespace: user-management
@@ -187,9 +217,21 @@ releases:
     branch: 1.9.6-SNAPSHOT.1
   version: 1.9.6-SNAPSHOT.1
   values:
-    - values.yaml
-    - values.gotmpl
-    - image:
-        name: '{{ env "edpComponentDockerRegistryUrl" }}/{{ env "globalEDPProject" }}/reloader-master'
-        version: 1.9.6-SNAPSHOT.1
+  - values.yaml
+  - values.gotmpl
+  - image:
+      name: '{{ env "edpComponentDockerRegistryUrl" }}/{{ env "globalEDPProject" }}/reloader-master'
+      version: 1.9.6-SNAPSHOT.1
   missingFileHandler: Warn
+
+
+- name: keycloak-nginx-proxy
+  namespace: user-management
+  chart: keycloak-nginx-proxy
+  missingFileHandler: Warn
+  needs:
+  - user-management/keycloak
+  values:
+  - values.gotmpl
+  - values.yaml
+  labels: {}

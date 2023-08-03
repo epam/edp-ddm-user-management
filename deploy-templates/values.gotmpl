@@ -5,16 +5,8 @@
 dnsWildcard: {{ env "dnsWildcard" }}
 
 {{ if ne $cloudProvider "AWS" }}
-postgresql:
-  primary:
-   podAnnotations: {"backup.velero.io/backup-volumes": "data"}
-{{ end }}
-
-
-{{ if ne $cloudProvider "AWS" }}
-postgresql:
-  primary:
-   podAnnotations: {"backup.velero.io/backup-volumes": "data"}
+primary:
+  podAnnotations: {"backup.velero.io/backup-volumes": "data"}
 {{ end }}
 
 idgovua:
@@ -211,9 +203,9 @@ keycloak:
     autoRedirectEnabled: {{ env "autoRedirectEnabled" | default "false" }}
     ssoRealmEnabled: {{ env "ssoRealmEnabled" | default "false" }}
   host: platform-keycloak.{{ requiredEnv "dnsWildcard" }}
-  url: https://platform-keycloak.{{ env "dnsWildcard" }}
-  route:
-    host: platform-keycloak.{{ env "dnsWildcard" }}
+  url: https://platform-keycloak.{{ env "dnsWildcard" }}/auth
+route:
+  host: platform-keycloak.{{ env "dnsWildcard" }}
 
 dockerProxyRegistry:
 dockerRegistry: {{ env "dockerRegistry" }}
@@ -221,7 +213,7 @@ dockerRegistry: {{ env "dockerRegistry" }}
 {{- if eq $cluster_version "4.7.0" }}
 groupsync_operator_version: 0.0.12
 {{- else }}
-groupsync_operator_version: 0.0.23
+groupsync_operator_version: 0.0.26
 {{- end }}
 
 global:

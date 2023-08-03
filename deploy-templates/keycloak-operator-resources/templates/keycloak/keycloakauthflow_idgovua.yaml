@@ -1,6 +1,6 @@
 {{- range $authFlow := .Values.idgovua.authFlows }}
 ---
-apiVersion: v1.edp.epam.com/v1alpha1
+apiVersion: v1.edp.epam.com/v1
 kind: KeycloakAuthFlow
 metadata:
   name: {{ $authFlow.name }}
