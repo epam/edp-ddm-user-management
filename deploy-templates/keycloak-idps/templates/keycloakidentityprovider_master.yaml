@@ -11,7 +11,7 @@ spec:
   alias: openshift
   authenticateByDefault: false
   enabled: true
-  firstBrokerLoginFlowAlias: "first broker login"
+  firstBrokerLoginFlowAlias: "{{ .Values.master.authFlows.fixFbl.name }}"
   providerId: keycloak-oidc
   displayName: "openshift-sso"
   config:

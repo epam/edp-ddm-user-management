@@ -9,6 +9,39 @@ primary:
   podAnnotations: {"backup.velero.io/backup-volumes": "data"}
 {{ end }}
 
+master:
+  authFlows:
+    fixFbl:
+      name: fix-first-broker-login
+      realm: master
+      alias: fix-first-broker-login
+      builtIn: false
+      providerId: basic-flow
+      topLevel: true
+      parentName: ''
+      childType: ''
+      authenticators:
+        idpCreateUserIfUnique:
+          alias: ''
+          name: "idp-create-user-if-unique"
+          priority: 0
+          requirement: "ALTERNATIVE"
+          authenticatorFlow: false
+          authenticatorConfig:
+            require.password.update.after.registration: 'off'
+        idpAutomaticallySetExistingUser:
+          alias: ''
+          name: "idp-auto-link"
+          priority: 1
+          requirement: "ALTERNATIVE"
+          authenticatorFlow: false
+        idpOpenshiftAuthenticator:
+          alias: ''
+          name: "openshift-authenticator"
+          priority: 2
+          requirement: "ALTERNATIVE"
+          authenticatorFlow: false
+
 idgovua:
   sandbox: {{ env "idgovuaSandbox" | default "on" }}
   clientId: {{ env "idgovuaClientId" | default "mock" }}
