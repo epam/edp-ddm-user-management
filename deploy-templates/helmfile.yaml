@@ -94,8 +94,8 @@ releases:
   - values.gotmpl
   - image:
       name: '{{ env "edpComponentDockerRegistryUrl" }}/{{ env "globalEDPProject" }}/keycloak-master'
-      version: 1.9.6.18
-  version: 1.9.6.18
+      version: 1.9.6.23
+  version: 1.9.6.23
   hooks:
   - events:
     - presync
@@ -181,8 +181,8 @@ releases:
   - values.gotmpl
   - image:
       name: '{{ env "edpComponentDockerRegistryUrl" }}/{{ env "globalEDPProject" }}/digital-signature-ops-master'
-      version: 1.9.5.11
-  version: 1.9.5.11
+      version: 1.9.7.4
+  version: 1.9.7.4
   missingFileHandler: Warn
   labels:
     type: remote
@@ -199,7 +199,7 @@ releases:
   - values.yaml
   - values.gotmpl
   missingFileHandler: Warn
-  version: 1.5.0-SNAPSHOT.71
+  version: 1.5.0-SNAPSHOT.76
   labels:
     type: remote
     update_scc: false
@@ -230,6 +230,7 @@ releases:
   namespace: user-management
   chart: keycloak-nginx-proxy
   missingFileHandler: Warn
+  installed: false
   needs:
   - user-management/keycloak
   values:

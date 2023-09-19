@@ -39,7 +39,7 @@ master:
           alias: ''
           name: "openshift-authenticator"
           priority: 2
-          requirement: "ALTERNATIVE"
+          requirement: "REQUIRED"
           authenticatorFlow: false
 
 idgovua:
@@ -251,6 +251,7 @@ groupsync_operator_version: 0.0.26
 
 global:
   deploymentMode: {{ env "deploymentMode" }}
+  dnsWildcard: {{ env "dnsWildcard" }}
   clusterVersion: {{ $cluster_version }}
   whiteListIP:
     adminRoutes: {{ env "ADMIN_ROUTES_WHITELIST_CIDR" }}

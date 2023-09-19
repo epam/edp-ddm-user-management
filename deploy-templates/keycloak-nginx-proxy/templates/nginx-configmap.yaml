@@ -10,6 +10,7 @@ data:
     pid nginx.pid;
     http {
       server_tokens off;
+      large_client_header_buffers 4 40k;
       server {
         listen {{ .Values.nginx.port }};
         include /etc/nginx/mime.types;
