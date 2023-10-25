@@ -105,12 +105,18 @@ spec:
             httpGet:
               path: /
               port: http
+              httpHeaders:
+                - name: X-B3-Sampled
+                  value: "0"
           readinessProbe:
             initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
             timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
             httpGet:
               path: /
               port: http
+              httpHeaders:
+                - name: X-B3-Sampled
+                  value: "0"
           resources:
 {{ toYaml .Values.resources | indent 12 }}
           volumeMounts:

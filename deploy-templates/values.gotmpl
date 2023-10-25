@@ -44,8 +44,8 @@ master:
 
 idgovua:
   sandbox: {{ env "idgovuaSandbox" | default "on" }}
-  clientId: {{ env "idgovuaClientId" | default "mock" }}
-  clientSecret: {{ env "idgovuaClientSecret" | default "mock" }}
+  clientId: {{ env "ID_GOV_UA_CLIENT_ID" | default "mock" }}
+  clientSecret: {{ env "ID_GOV_UA_CLIENT_SECRET" | default "mock" }}
   authFlows:
     browserWithRedirectorFlow:
       name: browser-with-redirector
@@ -250,7 +250,7 @@ groupsync_operator_version: 0.0.26
 {{- end }}
 
 global:
-  deploymentMode: {{ env "deploymentMode" }}
+  deploymentMode: {{ env "PLATFORM_DEPLOYMENT_MODE" }}
   dnsWildcard: {{ env "dnsWildcard" }}
   clusterVersion: {{ $cluster_version }}
   whiteListIP:
