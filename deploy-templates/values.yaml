@@ -1,3 +1,7 @@
 cdPipelineName: platform
 cdPipelineStageName: main
 griada: {}
+
+database:
+  username: keycloak
+  existingSecretKey: keycloak-password

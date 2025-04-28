@@ -332,7 +332,21 @@ primary:
     ##      #!/bin/sh
     ##      echo "Do something."
     ##
-    scripts: {}
+    scripts:
+      create-keycloak-user.sh: |
+        #!/bin/sh
+
+        export PGPASSWORD="$POSTGRES_PASSWORD"
+
+        psql -v ON_ERROR_STOP=1 --username postgres <<-EOSQL
+          CREATE USER $KEYCLOAK_USER WITH PASSWORD '$KEYCLOAK_PASSWORD';
+          GRANT ALL PRIVILEGES ON DATABASE $POSTGRES_DB TO $KEYCLOAK_USER;
+          \c $POSTGRES_DB
+          GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA public TO $KEYCLOAK_USER;
+        EOSQL
+
+        unset PGPASSWORD
+
     ## @param primary.initdb.scriptsConfigMap ConfigMap with scripts to be run at first boot
     ## NOTE: This will override `primary.initdb.scripts`
     ##

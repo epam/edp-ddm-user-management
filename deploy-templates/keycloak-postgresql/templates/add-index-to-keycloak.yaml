@@ -1,0 +1,40 @@
+{{- if not (lookup "batch/v1" "Job" .Release.Namespace "add-index-to-keycloak") }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: add-index-to-keycloak
+spec:
+  backoffLimit: 3
+  template:
+    metadata:
+      name: add-index-to-keycloak
+    spec:
+      serviceAccountName: default
+      restartPolicy: Never
+      initContainers:
+        - name: wait-for-keycloak
+          image: curlimages/curl
+          command:
+            - sh
+            - -c
+            - >
+              until $(curl --output /dev/null --silent --head --fail http://keycloak-http/auth/health/ready); do
+                echo "Waiting for Keycloak to be ready...";
+                sleep 5;
+              done;
+              echo "Keycloak is ready!";
+      containers:
+        - name: add-index
+          image: postgres:13
+          env:
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-postgresql
+                  key: postgres-password
+          command:
+            - sh
+            - -c
+            - >
+              psql -h keycloak-postgresql -U postgres -d keycloak -c "CREATE INDEX IF NOT EXISTS idx_user_attribute_value_pattern_ops ON public.user_attribute (name, value text_pattern_ops);"
+  {{- end }}

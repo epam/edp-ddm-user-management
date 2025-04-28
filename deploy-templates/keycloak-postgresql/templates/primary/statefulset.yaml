@@ -206,6 +206,13 @@ spec:
               value: {{ .Values.postgresqlDataDir | quote }}
             {{- end }}
             # Authentication
+            - name: KEYCLOAK_USER
+              value: {{ .Values.database.username }}
+            - name: KEYCLOAK_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "postgresql.secretName" . }}
+                  key: {{ .Values.database.existingSecretKey }}
           {{- if and (not (empty $customUser)) (ne $customUser "postgres") }}
             - name: POSTGRES_USER
               value: {{ $customUser | quote }}

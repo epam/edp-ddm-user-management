@@ -4,8 +4,6 @@ missingFileHandler: Warn
 repositories:
 - name: hashicorp
   url: https://helm.releases.hashicorp.com
-- name: bitnami
-  url: https://charts.bitnami.com/bitnami
 values:
 - values.yaml
 - values.gotmpl
@@ -86,16 +84,16 @@ releases:
     type: remote
     update_scc: false
     isbranch: false
-    stream: 1-9-8
+    stream: 1.9.8-hotfix
     path: components/infra/
     repoURL: ssh://jenkins@gerrit.mdtu-ddm-edp-cicd:32114/mdtu-ddm/devops/keycloak.git
   values:
   - values.yaml
   - values.gotmpl
   - image:
-      name: '{{ env "edpComponentDockerRegistryUrl" }}/{{ env "globalEDPProject" }}/keycloak-1-9-8'
-      version: 1.9.8.11
-  version: 1.9.8.11
+      name: '{{ env "edpComponentDockerRegistryUrl" }}/{{ env "globalEDPProject" }}/keycloak-1.9.8-hotfix'
+      version: 1.9.8-hotfix.3
+  version: 1.9.8-hotfix.3
   hooks:
   - events:
     - presync
